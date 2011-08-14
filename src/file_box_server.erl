@@ -48,6 +48,7 @@ init([ServerId]) ->
     end,
 
     State = #state{id=ServerId, base_dir=BaseDir},
+    ok = file_box_server_manager:set_server_status(ServerId, node(), self()),
     {ok, State}.
 
 %%
@@ -80,6 +81,11 @@ read_file(ServerId, FileName) when is_integer(ServerId) and
 handle_call({save_file, FileName, Data}, _From, State) ->
     Path = file_path(State#state.base_dir, FileName),
     Result = file:write_file(Path, Data),
+
+    Size = erlang:size(Data),
+    ServerId = State#state.id,
+    {ok, _TotalSize} = file_box_server_manager:add_size(ServerId, Size),
+
     {reply, Result, State};
 
 handle_call({read_file, FileName}, From, State) ->
