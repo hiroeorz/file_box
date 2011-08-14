@@ -16,7 +16,7 @@ Module file_box
 
 
 
-<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#my_func-0">my_func/0</a></td><td></td></tr></table>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#start-0">start/0</a></td><td></td></tr></table>
 
 
 
@@ -24,13 +24,13 @@ Module file_box
 <h2><a name="functions">Function Details</a></h2>
 
 
-<a name="my_func-0"></a>
+<a name="start-0"></a>
 
-<h3>my_func/0</h3>
-
-
+<h3>start/0</h3>
 
 
 
-`my_func() -> any()`
+
+
+`start() -> any()`
 

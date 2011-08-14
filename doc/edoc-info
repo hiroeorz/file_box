@@ -1,3 +1,4 @@
 {application,file_box}.
 {packages,[]}.
-{modules,[file_box,file_box_app,file_box_db,file_box_server,file_box_sup]}.
+{modules,[file_box,file_box_app,file_box_config,file_box_db,file_box_server,
+          file_box_server_sup,file_box_sup]}.

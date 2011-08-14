@@ -13,7 +13,9 @@ The file_box application
 <table width="100%" border="0" summary="list of modules">
 <tr><td><a href="file_box.md" class="module">file_box</a></td></tr>
 <tr><td><a href="file_box_app.md" class="module">file_box_app</a></td></tr>
+<tr><td><a href="file_box_config.md" class="module">file_box_config</a></td></tr>
 <tr><td><a href="file_box_db.md" class="module">file_box_db</a></td></tr>
 <tr><td><a href="file_box_server.md" class="module">file_box_server</a></td></tr>
+<tr><td><a href="file_box_server_sup.md" class="module">file_box_server_sup</a></td></tr>
 <tr><td><a href="file_box_sup.md" class="module">file_box_sup</a></td></tr></table>
 
