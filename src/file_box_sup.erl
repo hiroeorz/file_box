@@ -24,5 +24,24 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-    {ok, { {one_for_one, 5, 10}, []} }.
+    FileBoxDb = {file_box_db,                             %% id
+                 {file_box_db, start_link, []},           %% child
+                 permanent,                               %% restart
+                 2000,                                    %% shutdown
+                 worker,                                  %% type
+                 [file_box_db]},                          %% modules
+
+    ServerSup = {file_box_server_sup,                     %% id
+                 {file_box_server_sup, start_link, []},   %% child
+                 permanent,                               %% restart
+                 2000,                                    %% shutdown
+                 supervisor,                              %% type
+                 [file_box_server, file_box_server_sup]}, %% modules
+
+    RestartStrategy = one_for_one,
+    MaxRestarts = 5,
+    MaxSecondsBetweenRestarts = 10,
+    SupFlags = {RestartStrategy, MaxRestarts, MaxSecondsBetweenRestarts},
+
+    {ok, { SupFlags, [FileBoxDb, ServerSup]} }.
 

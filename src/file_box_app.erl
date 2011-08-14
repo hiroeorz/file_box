@@ -10,6 +10,7 @@
 %% ===================================================================
 
 start(_StartType, _StartArgs) ->
+    file_box_config:load(),
     file_box_sup:start_link().
 
 stop(_State) ->

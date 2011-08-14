@@ -1,6 +1,6 @@
 -module(file_box).
 
--export([my_func/0]).
+-export([start/0]).
 
-my_func() ->
-  ok.
+start() ->
+  application:start(?MODULE).

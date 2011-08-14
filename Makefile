@@ -1,4 +1,9 @@
+ERL=erl
+BEAMDIR=./ebin ./deps/*/ebin
 REBAR=./rebar
+
+APP_NAME=file_box
+HOST_NAME=127.0.0.1
 
 all: clean compile xref
 
@@ -19,3 +24,7 @@ check:
 edoc:
 	@$(REBAR) doc
 
+boot:
+	@ $(ERL) -pa $(BEAMDIR) -name $(APP_NAME)@$(HOST_NAME) \
+                 -boot start_sasl \
+                 -s $(APP_NAME) start

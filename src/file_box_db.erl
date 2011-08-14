@@ -15,15 +15,13 @@
 -export([start/0, start_link/0, handle_call/3, code_change/3, terminate/2,
          get_file_key/2, get_server_id/1]).
 
--define(DbFileName, "/var/file_box/file_box.sqlite3").
-
 %%
 %% @doc starting server.
 %%
 -spec(start() -> {ok, pid()} ).
 
 start() ->
-    DbFileName = ?DbFileName,
+    DbFileName = file_box_config:get(db_file_name),
     gen_server:start({local, ?MODULE}, ?MODULE, [DbFileName], []).
 
 %%
@@ -32,7 +30,7 @@ start() ->
 -spec(start_link () -> {ok, pid()} ).
 
 start_link() ->
-    DbFileName = ?DbFileName,
+    DbFileName = file_box_config:get(db_file_name),
     gen_server:start_link({local, ?MODULE}, ?MODULE, [DbFileName], []).
 
 %%
@@ -96,7 +94,10 @@ handle_call({get_server_id, FileKey}, _From, State) ->
 
     {reply, Reply, State}.
 
-terminate(_Reason, _State) -> ok.
+terminate(_Reason, State) -> 
+    DBPid = State#state.db_pid,
+    sqlite3:close(DBPid),
+    ok.
 
 code_change(_OldVsn, State, _Extra) -> {ok, State}.
 
