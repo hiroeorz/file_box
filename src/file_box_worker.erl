@@ -101,8 +101,9 @@ init([]) ->
 handle_call({save_file, FileName, Data}, _From, State) ->
     ServerList = file_box_server_manager:get_save_target_list(),
     {ok, FileKey} = file_box_db:get_file_key(FileName),
+    MirrorCount = file_box_config:get(mirror_count),
 
-    Reply = case save_to_servers(FileKey, Data, ServerList, []) of
+    Reply = case save_to_servers(FileKey, Data, ServerList, MirrorCount, []) of
                 {ok, SavedServerList} ->
                     Res = file_box_db:set_server_list(FileKey, SavedServerList),
 
@@ -190,23 +191,30 @@ code_change(_OldVsn, State, _Extra) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec(save_to_servers(FileName::string(), Data::binary(), 
-                      ServerList::list(integer()), 
+                      ServerList::list(integer()),
+                      MirrorCount::integer(),
                       SavedServerList::list(integer())) -> 
-             {ok, SavedServerList::list(integer())}|{errir, atom()}).
+             {ok, SavedServerList::list(integer())}|
+             {errir, atom(), SavedServerList::list(integer())}).
 
-save_to_servers(FileName, Data, ServerList, SavedServerList) ->
-    case ServerList of
-        [] -> {ok, SavedServerList};
-        [Server | Tail] ->
-            Res = file_box_server:save_file(Server#fb_server.id, 
-                                            FileName, Data),
+save_to_servers(FileName, Data, ServerList, MirrorCount, SavedServerList) ->
+    if length(SavedServerList) >= MirrorCount ->
+            {ok, SavedServerList};
+       true ->
+            case ServerList of
+                [] -> {error, too_few_servers, SavedServerList};
+                [Server | Tail] ->
+                    Res = file_box_server:save_file(Server#fb_server.id, 
+                                                    FileName, Data),
+                    
+                    NewList = case Res of
+                                  ok ->
+                                      [Server#fb_server.id | SavedServerList];
+                                  {error, _Reason} ->
+                                      SavedServerList
+                              end,
 
-            case Res of
-                ok ->
-                    save_to_servers(FileName, Data, Tail, 
-                                    [Server#fb_server.id | SavedServerList]);
-                {error, _Reason} ->
-                    save_to_servers(FileName, Data, Tail, SavedServerList)
+                    save_to_servers(FileName, Data, Tail, MirrorCount, NewList)
             end
     end.
 

@@ -21,7 +21,7 @@
          terminate/2, code_change/3]).
 
 -export([set_server_status/3, set_server_status/4, 
-         get_save_target_list/0, add_size/2]).
+         get_save_target_list/0, add_size/2, remove_size/2]).
 
 -define(SERVER, ?MODULE). 
 
@@ -99,7 +99,7 @@ get_save_target_list() ->
     
 %%--------------------------------------------------------------------
 %% @doc
-%% Get File Save Target Cluster List.
+%% Add file total size.
 %%
 %% @end
 %%--------------------------------------------------------------------
@@ -107,6 +107,17 @@ get_save_target_list() ->
 
 add_size(Id, Size) ->
     gen_server:call(?SERVER, {add_size, Id, Size}).
+
+%%--------------------------------------------------------------------
+%% @doc
+%% Remove file total size.
+%%
+%% @end
+%%--------------------------------------------------------------------
+-spec(remove_size(Id::integer(), Size::integer()) -> {ok, integer()} ).
+
+remove_size(Id, Size) ->
+    gen_server:call(?SERVER, {remove_size, Id, Size}).
 
 %%--------------------------------------------------------------------
 %% @private
@@ -149,23 +160,17 @@ handle_call({get_save_target_list}, _From, State) ->
            end,
 
     MirrorCount = file_box_config:get(mirror_count),
-    NewList = lists:sublist(List, MirrorCount),
+    NewList = lists:sublist(List, MirrorCount * 2), %% FOR FAIL SERVER. 
 
     {reply, NewList, State};
 
 handle_call({add_size, Id, Size}, _From, State) ->
-    Reply = case ets:lookup(fbServerManagerRam, Id) of
-                [] -> {error, invalid_id};
-                [ServerStatus] ->
-                    NewTotalSize = ServerStatus#fb_server.total_size + Size,
-                    NewServerStatus = 
-                        ServerStatus#fb_server{total_size=NewTotalSize},
-                    ets:insert(fbServerManagerRam, NewServerStatus),
-                    dets:insert(fbServerManagerDisk, NewServerStatus),
-                    {ok, NewTotalSize}
-            end,
+    Reply = set_total_size(Id, Size),
+    {reply, Reply, State};
 
-    {reply, Reply, State}.
+handle_call({remove_size, Id, Size}, _From, State) ->
+    Reply = set_total_size(Id, 0 - Size),
+    {reply, Reply, State}.    
 
 %%--------------------------------------------------------------------
 %% @private
@@ -263,7 +268,6 @@ restore_table()->
 %%
 %% @end
 %%--------------------------------------------------------------------
-
 -spec(get_servers(Before::integer(), ServerList::list(#fb_server{})) ->
              list(#fb_server{})).
 
@@ -279,3 +283,24 @@ get_servers(Before, ServerList) ->
             get_servers(Next, [Server | ServerList])
     end.
 
+%%--------------------------------------------------------------------
+%% @private
+%% @doc
+%% Set total file size.
+%%
+%% @end
+%%--------------------------------------------------------------------
+-spec(set_total_size(Id::integer(), Size::integer()) ->
+             {ok, NewTotalSize::integer()}|{error, invalid_id}).
+
+set_total_size(Id, Size) ->
+    case ets:lookup(fbServerManagerRam, Id) of
+        [] -> {error, invalid_id};
+        [ServerStatus] ->
+            NewTotalSize = ServerStatus#fb_server.total_size + Size,
+            NewServerStatus = 
+                ServerStatus#fb_server{total_size=NewTotalSize},
+            ets:insert(fbServerManagerRam, NewServerStatus),
+            dets:insert(fbServerManagerDisk, NewServerStatus),
+            {ok, NewTotalSize}
+    end.

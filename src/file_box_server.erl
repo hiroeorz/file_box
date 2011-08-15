@@ -82,12 +82,19 @@ read_file(ServerId, FileName) when is_integer(ServerId) and
              {reply, any(), #state{}} ).
 
 handle_call({save_file, FileName, Data}, _From, State) ->
+    ServerId = State#state.id,
+    Size = erlang:size(Data),
+    {ok, _TotalSize} = file_box_server_manager:add_size(ServerId, Size),
+
     Path = file_path(State#state.base_dir, FileName),
     Result = file:write_file(Path, Data),
 
-    Size = erlang:size(Data),
-    ServerId = State#state.id,
-    {ok, _TotalSize} = file_box_server_manager:add_size(ServerId, Size),
+    case Result of
+        ok -> ok;
+        {error, _Reason} ->
+            file_box_server_manager:remove_size(ServerId, Size)
+    end,
+
 
     {reply, Result, State};
 
