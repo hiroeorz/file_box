@@ -39,7 +39,7 @@
 %% @end
 %%--------------------------------------------------------------------
 start_link() ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
+    gen_server:start_link({global, ?SERVER}, ?MODULE, [], []).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -71,7 +71,7 @@ init([]) ->
 -spec(set_server_status(Id::integer(), Node::atom(), Pid::pid()) -> ok ).
 
 set_server_status(Id, Node, Pid) ->
-    gen_server:call(?SERVER, {set_server_status, Id, Node, Pid}).
+    gen_server:call({global, ?SERVER}, {set_server_status, Id, Node, Pid}).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -84,7 +84,7 @@ set_server_status(Id, Node, Pid) ->
                         Pid::pid(), TotalSize::integer()) -> ok ).
 
 set_server_status(Id, Node, Pid, TotalSize) ->
-    gen_server:call(?SERVER, {set_server_status, Id, Node, Pid, TotalSize}).
+    gen_server:call({global, ?SERVER}, {set_server_status, Id, Node, Pid, TotalSize}).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -95,7 +95,7 @@ set_server_status(Id, Node, Pid, TotalSize) ->
 -spec(get_save_target_list() -> list(#fb_server{}) ).
 
 get_save_target_list() ->
-    gen_server:call(?SERVER, {get_save_target_list}).
+    gen_server:call({global, ?SERVER}, {get_save_target_list}).
     
 %%--------------------------------------------------------------------
 %% @doc
@@ -106,7 +106,7 @@ get_save_target_list() ->
 -spec(add_size(Id::integer(), Size::integer()) -> {ok, integer()} ).
 
 add_size(Id, Size) ->
-    gen_server:call(?SERVER, {add_size, Id, Size}).
+    gen_server:call({global, ?SERVER}, {add_size, Id, Size}).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -117,7 +117,7 @@ add_size(Id, Size) ->
 -spec(remove_size(Id::integer(), Size::integer()) -> {ok, integer()} ).
 
 remove_size(Id, Size) ->
-    gen_server:call(?SERVER, {remove_size, Id, Size}).
+    gen_server:call({global, ?SERVER}, {remove_size, Id, Size}).
 
 %%--------------------------------------------------------------------
 %% @private

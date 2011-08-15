@@ -23,7 +23,7 @@
 
 start(ServerId) ->
     ServerName = server_name(ServerId),
-    gen_server:start({local, ServerName}, ?MODULE, [ServerId], []).
+    gen_server:start({global, ServerName}, ?MODULE, [ServerId], []).
 
 %%
 %% @doc starting server for added Id
@@ -32,7 +32,7 @@ start(ServerId) ->
 
 start_link(ServerId) ->
     ServerName = server_name(ServerId),
-    gen_server:start_link({local, ServerName}, ?MODULE, [ServerId], []).
+    gen_server:start_link({global, ServerName}, ?MODULE, [ServerId], []).
 
 %%
 %% @doc initialize server.
@@ -64,7 +64,7 @@ save_file(ServerId, FileName, Data) when is_integer(ServerId) and
                                          is_list(FileName) and 
                                          is_binary(Data) ->
     ServerName = server_name(ServerId),
-    gen_server:call(ServerName, {save_file, FileName, Data}).
+    gen_server:call({global, ServerName}, {save_file, FileName, Data}).
 
 %%
 %% @doc read file from dir.
@@ -74,7 +74,7 @@ save_file(ServerId, FileName, Data) when is_integer(ServerId) and
 read_file(ServerId, FileName) when is_integer(ServerId) and
                                    is_list(FileName) ->
     ServerName = server_name(ServerId),
-    gen_server:call(ServerName, {read_file, FileName}).    
+    gen_server:call({global, ServerName}, {read_file, FileName}).    
 
 %%--------------------------------------------------------------------
 %% @private

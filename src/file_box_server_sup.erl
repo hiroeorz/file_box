@@ -69,15 +69,15 @@ init([]) ->
 -spec(file_box_server_childs() -> list(tuple()) ).
 
 file_box_server_childs() ->
-    ServerCount = file_box_config:get(file_server_count),
+    ServerIdList = file_box_config:get(file_server_id_list),
     BaseDir = file_box_config:get(data_dir),
-    file_box_server_childs(ServerCount, BaseDir, []).
+    file_box_server_childs(ServerIdList, BaseDir, []).
 
-file_box_server_childs(ServerCount, BaseDir, ChildList) ->
-    case ServerCount of
-        0 -> 
+file_box_server_childs(ServerIdList, BaseDir, ChildList) ->
+    case ServerIdList of
+        [] -> 
             ChildList;
-        ServerNo ->
+        [ServerNo | Tail] ->
             WorkerName = 
                 list_to_atom("file_box_server_" ++ integer_to_list(ServerNo)),
 
@@ -88,6 +88,5 @@ file_box_server_childs(ServerCount, BaseDir, ChildList) ->
                       worker,                                    %% type
                       [file_box_server]},                        %% modules
 
-            file_box_server_childs(ServerCount - 1, BaseDir, 
-                                   [AChild | ChildList])
+            file_box_server_childs(Tail, BaseDir, [AChild | ChildList])
     end.

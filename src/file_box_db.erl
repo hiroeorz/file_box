@@ -13,8 +13,9 @@
 
 -export([init/1]).
 -export([start/0, start_link/0, handle_call/3, handle_cast/2, handle_info/2,
-         code_change/3, terminate/2,
-         get_file_key/1, get_server_id_list/1, set_server_list/2]).
+         code_change/3, terminate/2]).
+
+-export([get_file_key/1, get_server_id_list/1, set_server_list/2]).
 
 %%
 %% @doc starting server.
@@ -23,7 +24,7 @@
 
 start() ->
     DbFileName = file_box_config:get(db_file_name),
-    gen_server:start({local, ?MODULE}, ?MODULE, [DbFileName], []).
+    gen_server:start({global, ?MODULE}, ?MODULE, [DbFileName], []).
 
 %%
 %% @doc starting server.
@@ -32,7 +33,7 @@ start() ->
 
 start_link() ->
     DbFileName = file_box_config:get(db_file_name),
-    gen_server:start_link({local, ?MODULE}, ?MODULE, [DbFileName], []).
+    gen_server:start_link({global, ?MODULE}, ?MODULE, [DbFileName], []).
 
 %%
 %% @doc initialize server.
@@ -51,7 +52,7 @@ init([DbFileName]) ->
 -spec(get_file_key(string()) -> {ok, string()} ).
 
 get_file_key(FileName) ->
-    gen_server:call(?MODULE, {get_file_key, FileName}).
+    gen_server:call({global, ?MODULE}, {get_file_key, FileName}).
 
 %%
 %% @doc get server_id from file key.
@@ -60,7 +61,7 @@ get_file_key(FileName) ->
              {ok, list(integer())}|{error, not_found} ).
 
 get_server_id_list(FileKey) ->
-    gen_server:call(?MODULE, {get_server_id_list, FileKey}).
+    gen_server:call({global, ?MODULE}, {get_server_id_list, FileKey}).
 
 %%
 %% @doc get server_id from file key.
@@ -68,7 +69,7 @@ get_server_id_list(FileKey) ->
 -spec(set_server_list(string(), list(integer())) -> ok |{error, not_found} ).
 
 set_server_list(FileKey, ServerIdList) ->
-    gen_server:call(?MODULE, {set_server_list, FileKey, ServerIdList}).
+    gen_server:call({global, ?MODULE}, {set_server_list, FileKey, ServerIdList}).
 
 %%--------------------------------------------------------------------
 %% @private
