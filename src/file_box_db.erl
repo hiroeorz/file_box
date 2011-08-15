@@ -13,7 +13,7 @@
 
 -export([init/1]).
 -export([start/0, start_link/0, handle_call/3, code_change/3, terminate/2,
-         get_file_key/2, get_server_id/1]).
+         get_file_key/1, get_server_id/1, set_server_list/2]).
 
 %%
 %% @doc starting server.
@@ -47,10 +47,10 @@ init([DbFileName]) ->
 %%
 %% @doc save file key and server_id.
 %%
--spec(get_file_key(integer(), string()) -> {ok, string()} ).
+-spec(get_file_key(string()) -> {ok, string()} ).
 
-get_file_key(ServerId, FileName) ->
-    gen_server:call(?MODULE, {get_file_key, ServerId, FileName}).
+get_file_key(FileName) ->
+    gen_server:call(?MODULE, {get_file_key, FileName}).
 
 %%
 %% @doc get server_id from file key.
@@ -61,19 +61,41 @@ get_server_id(FileKey) ->
     gen_server:call(?MODULE, {get_server_id, FileKey}).
 
 %%
+%% @doc get server_id from file key.
+%%
+-spec(set_server_list(string(), list(integer())) -> ok |{error, not_found} ).
+
+set_server_list(FileKey, ServerIdList) ->
+    gen_server:call(?MODULE, {set_server_list, FileKey, ServerIdList}).
+    
+
+%%
 %% @doc handle call for save_file
 %%
 -spec(handle_call(tuple(), pid(), #state{}) -> 
              {reply, any(), #state{}} ).
 
-handle_call({get_file_key, ServerId, FileName}, _From, State) ->
+handle_call({set_server_list, FileKey, ServerIdList}, _From, State) ->
+    DBPid = State#state.db_pid,
+
+    Result = 
+        sqlite3:sql_exec(DBPid,
+                         "update files_info
+                                 set server_id_list = :server_id_list 
+                                 where key = :key",
+                         [{':server_id_list', list_to_binary(ServerIdList)},
+                          {':key', FileKey}]),
+
+    {reply, Result, State};
+
+handle_call({get_file_key, FileName}, _From, State) ->
     UniqKey = create_file_key(FileName),
 
     DBPid = State#state.db_pid,
     Result = sqlite3:sql_exec(DBPid,
-                              "insert into files_info 
-                                 values (:key, :server_id)",
-                              [{':key', UniqKey}, {':server_id', ServerId}]),
+                              "insert into files_info (key) 
+                                 values (:key)",
+                              [{':key', UniqKey}]),
     case Result of
         {rowid, _Id} -> {reply, {ok, UniqKey}, State};
         Other -> {reply, Other, State}
@@ -113,7 +135,7 @@ create_tables(DBPid) ->
             sqlite3:sql_exec(DBPid,
                             "create table files_info (
                                key VARCHAR(32) PRIMARY KEY,
-                               server_id INTEGER NOT NULL)")
+                               server_id_list BLOB)")
     end.
 
 %%

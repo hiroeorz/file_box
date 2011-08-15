@@ -11,7 +11,6 @@
                 base_dir  %% string()
                }).
 
--define(BaseDir, "/var/file_box/data").
 -export([init/1]).
 -export([start/1, handle_call/3, code_change/3, terminate/2,
          start_link/1, save_file/3, read_file/2]).
@@ -40,14 +39,18 @@ start_link(ServerId) ->
 -spec(init(integer()) -> {ok, #state{}}).
 
 init([ServerId]) ->
-    BaseDir = ?BaseDir ++ integer_to_list(ServerId),
-    
-    case file:make_dir(BaseDir) of
+    BaseDir = file_box_config:get(data_dir),
+    MyDataDir = BaseDir ++ integer_to_list(ServerId),
+    ?debugVal(MyDataDir),
+
+    case file:make_dir(MyDataDir) of
         ok -> ok;
-        {error, eexist} -> ok
+        {error, eexist} -> ok;
+        {error, enoent} -> 
+            io:format("no such data directory: ~p~n", [BaseDir])
     end,
 
-    State = #state{id=ServerId, base_dir=BaseDir},
+    State = #state{id=ServerId, base_dir=MyDataDir},
     ok = file_box_server_manager:set_server_status(ServerId, node(), self()),
     {ok, State}.
 
