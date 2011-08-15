@@ -12,7 +12,8 @@
                }).
 
 -export([init/1]).
--export([start/0, start_link/0, handle_call/3, code_change/3, terminate/2,
+-export([start/0, start_link/0, handle_call/3, handle_cast/2, handle_info/2,
+         code_change/3, terminate/2,
          get_file_key/1, get_server_id_list/1, set_server_list/2]).
 
 %%
@@ -68,11 +69,21 @@ get_server_id_list(FileKey) ->
 
 set_server_list(FileKey, ServerIdList) ->
     gen_server:call(?MODULE, {set_server_list, FileKey, ServerIdList}).
-    
 
+%%--------------------------------------------------------------------
+%% @private
+%% @doc
+%% Handling call messages
 %%
-%% @doc handle call for save_file
-%%
+%% @spec handle_call(Request, From, State) ->
+%%                                   {reply, Reply, State} |
+%%                                   {reply, Reply, State, Timeout} |
+%%                                   {noreply, State} |
+%%                                   {noreply, State, Timeout} |
+%%                                   {stop, Reason, Reply, State} |
+%%                                   {stop, Reason, State}
+%% @end
+%%--------------------------------------------------------------------
 -spec(handle_call(tuple(), pid(), #state{}) -> 
              {reply, any(), #state{}} ).
 
@@ -116,6 +127,32 @@ handle_call({get_server_id_list, FileKey}, _From, State) ->
             end,
 
     {reply, Reply, State}.
+
+%%--------------------------------------------------------------------
+%% @private
+%% @doc
+%% Handling cast messages
+%%
+%% @spec handle_cast(Msg, State) -> {noreply, State} |
+%%                                  {noreply, State, Timeout} |
+%%                                  {stop, Reason, State}
+%% @end
+%%--------------------------------------------------------------------
+handle_cast(_Msg, State) ->
+    {noreply, State}.
+
+%%--------------------------------------------------------------------
+%% @private
+%% @doc
+%% Handling all non call/cast messages
+%%
+%% @spec handle_info(Info, State) -> {noreply, State} |
+%%                                   {noreply, State, Timeout} |
+%%                                   {stop, Reason, State}
+%% @end
+%%--------------------------------------------------------------------
+handle_info(_Info, State) ->
+    {noreply, State}.
 
 terminate(_Reason, State) -> 
     DBPid = State#state.db_pid,

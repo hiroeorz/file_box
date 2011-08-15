@@ -12,7 +12,8 @@
                }).
 
 -export([init/1]).
--export([start/1, handle_call/3, code_change/3, terminate/2,
+-export([start/1, handle_call/3, handle_cast/2, handle_info/2, 
+         code_change/3, terminate/2,
          start_link/1, save_file/3, read_file/2]).
 
 %%
@@ -75,9 +76,20 @@ read_file(ServerId, FileName) when is_integer(ServerId) and
     ServerName = server_name(ServerId),
     gen_server:call(ServerName, {read_file, FileName}).    
 
+%%--------------------------------------------------------------------
+%% @private
+%% @doc
+%% Handling call messages
 %%
-%% @doc handle call for save_file
-%%
+%% @spec handle_call(Request, From, State) ->
+%%                                   {reply, Reply, State} |
+%%                                   {reply, Reply, State, Timeout} |
+%%                                   {noreply, State} |
+%%                                   {noreply, State, Timeout} |
+%%                                   {stop, Reason, Reply, State} |
+%%                                   {stop, Reason, State}
+%% @end
+%%--------------------------------------------------------------------
 -spec(handle_call(tuple(), pid(), #state{}) -> 
              {reply, any(), #state{}} ).
 
@@ -107,6 +119,31 @@ handle_call({read_file, FileName}, From, State) ->
 
     {noreply, State}.
 
+%%--------------------------------------------------------------------
+%% @private
+%% @doc
+%% Handling cast messages
+%%
+%% @spec handle_cast(Msg, State) -> {noreply, State} |
+%%                                  {noreply, State, Timeout} |
+%%                                  {stop, Reason, State}
+%% @end
+%%--------------------------------------------------------------------
+handle_cast(_Msg, State) ->
+    {noreply, State}.
+
+%%--------------------------------------------------------------------
+%% @private
+%% @doc
+%% Handling all non call/cast messages
+%%
+%% @spec handle_info(Info, State) -> {noreply, State} |
+%%                                   {noreply, State, Timeout} |
+%%                                   {stop, Reason, State}
+%% @end
+%%--------------------------------------------------------------------
+handle_info(_Info, State) ->
+    {noreply, State}.
   
 terminate(_Reason, _State) -> ok.
 

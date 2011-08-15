@@ -45,10 +45,17 @@ init([]) ->
                      worker,                                     %% type
                      [file_box_server_manager]},                 %% modules
 
+    WokerSpawner = {file_box_worker_spawner,                     %% id
+                    {file_box_worker_spawner, start_link, []},   %% child
+                    permanent,                                   %% restart
+                    2000,                                        %% shutdown
+                    worker,                                      %% type
+                    [file_box_worker_spawner]},                  %% modules
+
     RestartStrategy = one_for_one,
     MaxRestarts = 5,
     MaxSecondsBetweenRestarts = 10,
     SupFlags = {RestartStrategy, MaxRestarts, MaxSecondsBetweenRestarts},
 
-    {ok, { SupFlags, [ServerManager, FileBoxDb, ServerSup]} }.
+    {ok, { SupFlags, [ServerManager, FileBoxDb, ServerSup, WokerSpawner]} }.
 
