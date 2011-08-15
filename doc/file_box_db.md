@@ -22,7 +22,7 @@ __Authors:__ HIROE Shin ([`twitter: http://twitter.com/#!/hiroe_orz17`](mailto:t
 
 
 
-<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#code_change-3">code_change/3</a></td><td></td></tr><tr><td valign="top"><a href="#get_file_key-2">get_file_key/2</a></td><td>save file key and server_id.</td></tr><tr><td valign="top"><a href="#get_server_id-1">get_server_id/1</a></td><td>get server_id from file key.</td></tr><tr><td valign="top"><a href="#handle_call-3">handle_call/3</a></td><td>handle call for save_file.</td></tr><tr><td valign="top"><a href="#init-1">init/1</a></td><td>initialize server.</td></tr><tr><td valign="top"><a href="#start-0">start/0</a></td><td>starting server.</td></tr><tr><td valign="top"><a href="#start_link-0">start_link/0</a></td><td>starting server.</td></tr><tr><td valign="top"><a href="#terminate-2">terminate/2</a></td><td></td></tr></table>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#code_change-3">code_change/3</a></td><td></td></tr><tr><td valign="top"><a href="#get_file_key-1">get_file_key/1</a></td><td>save file key and server_id.</td></tr><tr><td valign="top"><a href="#get_server_id-1">get_server_id/1</a></td><td>get server_id from file key.</td></tr><tr><td valign="top"><a href="#handle_call-3">handle_call/3</a></td><td>handle call for save_file.</td></tr><tr><td valign="top"><a href="#init-1">init/1</a></td><td>initialize server.</td></tr><tr><td valign="top"><a href="#set_server_list-2">set_server_list/2</a></td><td>get server_id from file key.</td></tr><tr><td valign="top"><a href="#start-0">start/0</a></td><td>starting server.</td></tr><tr><td valign="top"><a href="#start_link-0">start_link/0</a></td><td>starting server.</td></tr><tr><td valign="top"><a href="#terminate-2">terminate/2</a></td><td></td></tr></table>
 
 
 
@@ -40,15 +40,15 @@ __Authors:__ HIROE Shin ([`twitter: http://twitter.com/#!/hiroe_orz17`](mailto:t
 
 `code_change(OldVsn, State, Extra) -> any()`
 
-<a name="get_file_key-2"></a>
+<a name="get_file_key-1"></a>
 
-<h3>get_file_key/2</h3>
-
-
+<h3>get_file_key/1</h3>
 
 
 
-<pre>get_file_key(ServerId::integer(), FileName::string()) -> {ok, string()}</pre>
+
+
+<pre>get_file_key(FileName::string()) -> {ok, string()}</pre>
 <br></br>
 
 
@@ -100,6 +100,21 @@ handle call for save_file
 
 
 initialize server.
+<a name="set_server_list-2"></a>
+
+<h3>set_server_list/2</h3>
+
+
+
+
+
+<pre>set_server_list(FileKey::string(), ServerIdList::[integer()]) -> ok | {error, not_found}</pre>
+<br></br>
+
+
+
+
+get server_id from file key.
 <a name="start-0"></a>
 
 <h3>start/0</h3>

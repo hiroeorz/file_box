@@ -13,7 +13,7 @@
 
 -export([init/1]).
 -export([start/0, start_link/0, handle_call/3, code_change/3, terminate/2,
-         get_file_key/1, get_server_id/1, set_server_list/2]).
+         get_file_key/1, get_server_id_list/1, set_server_list/2]).
 
 %%
 %% @doc starting server.
@@ -55,10 +55,11 @@ get_file_key(FileName) ->
 %%
 %% @doc get server_id from file key.
 %%
--spec(get_server_id(string()) -> {ok, integer()}|{error, not_found} ).
+-spec(get_server_id_list(string()) -> 
+             {ok, list(integer())}|{error, not_found} ).
 
-get_server_id(FileKey) ->
-    gen_server:call(?MODULE, {get_server_id, FileKey}).
+get_server_id_list(FileKey) ->
+    gen_server:call(?MODULE, {get_server_id_list, FileKey}).
 
 %%
 %% @doc get server_id from file key.
@@ -101,17 +102,17 @@ handle_call({get_file_key, FileName}, _From, State) ->
         Other -> {reply, Other, State}
     end;
 
-handle_call({get_server_id, FileKey}, _From, State) ->
+handle_call({get_server_id_list, FileKey}, _From, State) ->
     DBPid = State#state.db_pid,
     SqlResult = sqlite3:sql_exec(DBPid,
-                                 "select server_id from files_info
+                                 "select server_id_list from files_info
                                     where key = :key",
                                  [{':key', FileKey}]),
     Reply = case SqlResult of
                 [] -> 
                     {error, not_found};
-                [_, {rows,[{ServerId}]}] ->
-                    {ok, ServerId}
+                [_, {rows,[{ServerIdListBin}]}] ->
+                    {ok, binary_to_list(ServerIdListBin)}
             end,
 
     {reply, Reply, State}.
