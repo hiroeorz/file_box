@@ -57,5 +57,12 @@ init([]) ->
     MaxSecondsBetweenRestarts = 10,
     SupFlags = {RestartStrategy, MaxRestarts, MaxSecondsBetweenRestarts},
 
-    {ok, { SupFlags, [ServerManager, FileBoxDb, ServerSup, WokerSpawner]} }.
+    BootList = case file_box_config:get(type) of
+                   master -> 
+                       [ServerManager, FileBoxDb, ServerSup, WokerSpawner];
+                   slave ->
+                       [ServerSup]
+               end,        
+
+    {ok, { SupFlags, BootList } }.
 
