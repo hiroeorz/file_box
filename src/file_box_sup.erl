@@ -24,19 +24,19 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-    FileBoxDb = {file_box_db,                             %% id
-                 {file_box_db, start_link, []},           %% child
-                 permanent,                               %% restart
-                 2000,                                    %% shutdown
-                 worker,                                  %% type
-                 [file_box_db]},                          %% modules
+    FileBoxDb = {file_box_db,                                    %% id
+                 {file_box_db, start_link, []},                  %% child
+                 permanent,                                      %% restart
+                 2000,                                           %% shutdown
+                 worker,                                         %% type
+                 [file_box_db]},                                 %% modules
 
-    ServerSup = {file_box_server_sup,                     %% id
-                 {file_box_server_sup, start_link, []},   %% child
-                 permanent,                               %% restart
-                 2000,                                    %% shutdown
-                 supervisor,                              %% type
-                 [file_box_server, file_box_server_sup]}, %% modules
+    ServerSup = {file_box_server_sup,                            %% id
+                 {file_box_server_sup, start_link, []},          %% child
+                 permanent,                                      %% restart
+                 2000,                                           %% shutdown
+                 supervisor,                                     %% type
+                 [file_box_server, file_box_server_sup]},        %% modules
 
     ServerManager = {file_box_server_manager,                    %% id
                      {file_box_server_manager, start_link, []},  %% child
