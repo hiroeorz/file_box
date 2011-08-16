@@ -100,6 +100,7 @@ handle_call({save_file, FileName, Data}, _From, State) ->
 
     Path = file_path(State#state.base_dir, FileName),
     Result = file:write_file(Path, Data),
+    io:format("file saved. ID:~p~n", [ServerId]),
 
     case Result of
         ok -> ok;
@@ -114,6 +115,7 @@ handle_call({read_file, FileName}, From, State) ->
     spawn_link(fun() ->
                        Path = file_path(State#state.base_dir, FileName),
                        Result = file:read_file(Path),
+                       io:format("file readed. ID:~p~n", [State#state.id]),
                        gen_server:reply(From, Result)
                end),
 

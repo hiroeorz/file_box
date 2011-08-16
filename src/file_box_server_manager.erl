@@ -21,7 +21,7 @@
          terminate/2, code_change/3]).
 
 -export([set_server_status/3, set_server_status/4, 
-         get_save_target_list/0, add_size/2, remove_size/2]).
+         get_save_target_list/0, add_size/2, remove_size/2, server_list/0]).
 
 -define(SERVER, ?MODULE). 
 
@@ -120,6 +120,17 @@ remove_size(Id, Size) ->
     gen_server:call({global, ?SERVER}, {remove_size, Id, Size}).
 
 %%--------------------------------------------------------------------
+%% @doc
+%% Getting servers list for system management.
+%%
+%% @end
+%%--------------------------------------------------------------------
+-spec(server_list() -> list() ).
+
+server_list() ->
+    gen_server:call({global, ?SERVER}, {server_list}).
+
+%%--------------------------------------------------------------------
 %% @private
 %% @doc
 %% Handling call messages
@@ -153,12 +164,7 @@ handle_call({set_server_status, Id, Node, Pid, TotalSize}, _From, State) ->
     {reply, ok, State};
 
 handle_call({get_save_target_list}, _From, State) ->
-    List = case ets:first(fbServerManagerRam) of
-               '$end_of_table' -> [];
-               First ->
-                   get_servers(First, ets:lookup(fbServerManagerRam, First))
-           end,
-
+    List = get_servers(),
     MirrorCount = file_box_config:get(mirror_count),
     NewList = lists:sublist(List, MirrorCount * 2), %% FOR FAIL SERVER. 
 
@@ -170,7 +176,12 @@ handle_call({add_size, Id, Size}, _From, State) ->
 
 handle_call({remove_size, Id, Size}, _From, State) ->
     Reply = set_total_size(Id, 0 - Size),
+    {reply, Reply, State};
+
+handle_call({server_list}, _From, State) ->
+    Reply = get_servers(),
     {reply, Reply, State}.    
+
 
 %%--------------------------------------------------------------------
 %% @private
@@ -268,6 +279,15 @@ restore_table()->
 %%
 %% @end
 %%--------------------------------------------------------------------
+-spec(get_servers() -> list(#fb_server{})).
+
+get_servers() ->
+    case ets:first(fbServerManagerRam) of
+        '$end_of_table' -> [];
+        First ->
+            get_servers(First, ets:lookup(fbServerManagerRam, First))
+    end.
+
 -spec(get_servers(Before::integer(), ServerList::list(#fb_server{})) ->
              list(#fb_server{})).
 
