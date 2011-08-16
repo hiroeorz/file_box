@@ -191,7 +191,7 @@ code_change(_OldVsn, State, _Extra) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec(save_to_servers(FileName::string(), Data::binary(), 
-                      ServerList::list(integer()),
+                      ServerList::list(#fb_server{}),
                       MirrorCount::integer(),
                       SavedServerList::list(integer())) -> 
              {ok, SavedServerList::list(integer())}|
@@ -207,16 +207,55 @@ save_to_servers(FileName, Data, ServerList, MirrorCount, SavedServerList) ->
                     Res = file_box_server:save_file(Server#fb_server.id, 
                                                     FileName, Data),
                     
-                    NewList = case Res of
+                    NewSavedList = case Res of
                                   ok ->
                                       [Server#fb_server.id | SavedServerList];
-                                  {error, _Reason} ->
+                                  {error, _} ->
                                       SavedServerList
                               end,
 
-                    save_to_servers(FileName, Data, Tail, MirrorCount, NewList)
+                    ReSortedServerList = 
+                        case Res of
+                            ok ->
+                                resort_server_list(Server, Tail);
+                            {error, _} ->
+                                Tail
+                        end,
+
+                    save_to_servers(FileName, Data, ReSortedServerList, 
+                                    MirrorCount, NewSavedList)
             end
     end.
+
+%%--------------------------------------------------------------------
+%% @private
+%% @doc
+%% Create server list that sorted, saved node's server is moved to end of list.
+%%
+%% @end
+%%--------------------------------------------------------------------
+-spec(resort_server_list(SavedServer::#fb_server{}, List::list(#fb_server{})) ->
+             list(#fb_server{})).
+
+resort_server_list(SavedServer, List) ->
+    resort_server_list(SavedServer, List, List).
+
+resort_server_list(_SavedServer, [], SortedList) ->
+    SortedList;
+
+resort_server_list(SavedServer, List, SortedList) ->
+    [Server | Tail] = List,
+
+    Node = Server#fb_server.node,
+    SavedNode = SavedServer#fb_server.node,
+
+    case Node of
+        SavedNode ->
+            NewList = lists:append(lists:delete(Server, SortedList), [Server]),
+            resort_server_list(SavedServer, Tail, NewList);
+        _ ->
+            resort_server_list(SavedServer, Tail, SortedList)
+    end.            
 
 %%--------------------------------------------------------------------
 %% @private
