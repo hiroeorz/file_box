@@ -61,7 +61,7 @@ init([]) ->
                    master -> 
                        [ServerManager, FileBoxDb, ServerSup, WokerSpawner];
                    slave ->
-                       [ServerSup]
+                       [ServerSup, WokerSpawner]
                end,        
 
     {ok, { SupFlags, BootList } }.
