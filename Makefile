@@ -28,3 +28,7 @@ boot:
 	@ $(ERL) -pa $(BEAMDIR) -name $(APP_NAME)@$(HOST_NAME) \
                  -boot start_sasl \
                  -s $(APP_NAME) start
+boot_slave1:
+	@ $(ERL) -pa $(BEAMDIR) -name $(APP_NAME)_slave1@$(HOST_NAME) \
+                 -boot start_sasl \
+                 -s $(APP_NAME) start
