@@ -6,5 +6,5 @@
 
   {file_server_id_list, [5, 6, 7, 8]},
   {master_node, 'file_box@127.0.0.1'},
-  {node_list, ['file_box@127.0.0.1']},
+  {node_list, ['file_box@127.0.0.1', 'file_box_slave1@127.0.0.1']},
  ]}.

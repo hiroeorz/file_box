@@ -32,7 +32,12 @@ stop(_State) ->
 
 connect_to_nodes(NodeList) ->
     case NodeList of
-        [] -> ok;
+        [] ->
+            receive
+            after 2000 -> ok
+            end,
+            io:format("connected nodes:~p~n", [nodes()]),
+            ok;
         [Node | Tail] ->
             net_kernel:connect(Node),
             connect_to_nodes(Tail)
