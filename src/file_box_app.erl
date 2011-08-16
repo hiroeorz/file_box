@@ -18,7 +18,7 @@ start(_StartType, _StartArgs) ->
 	    Cookie = file_box_config:get(cookie),
 	    erlang:set_cookie(Node, Cookie),
             NodeList = file_box_config:get(node_list),
-            ping_to_nodes(NodeList)
+            connect_to_nodes(NodeList)
     end,
 
     file_box_sup:start_link().
@@ -30,10 +30,10 @@ stop(_State) ->
 %% Local functions
 %% ===================================================================
 
-ping_to_nodes(NodeList) ->
+connect_to_nodes(NodeList) ->
     case NodeList of
         [] -> ok;
         [Node | Tail] ->
-            net_adm:ping(Node),
-            ping_to_nodes(Tail)
+            net_kernel:connect(Node),
+            connect_to_nodes(Tail)
     end.
