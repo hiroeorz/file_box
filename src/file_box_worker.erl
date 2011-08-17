@@ -195,7 +195,7 @@ code_change(_OldVsn, State, _Extra) ->
                       MirrorCount::integer(),
                       SavedServerList::list(integer())) -> 
              {ok, SavedServerList::list(integer())}|
-             {errir, atom(), SavedServerList::list(integer())}).
+             {error, atom(), SavedServerList::list(integer())}).
 
 save_to_servers(FileName, Data, ServerList, MirrorCount, SavedServerList) ->
     if length(SavedServerList) >= MirrorCount ->
