@@ -188,11 +188,7 @@ create_file_key(Str) when is_list(Str) ->
         integer_to_list(Seconds) ++
         integer_to_list(Microseconds),
 
-    Context0 = crypto:sha_init(),
-    Context1 = crypto:sha_update(Context0, TimeStr),
-    Context2 = crypto:sha_update(Context1, atom_to_list(node())),
-    Context3 = crypto:sha_update(Context2, Str),
-    Digest = crypto:sha_final(Context3),
+    Digest = crypto:sha([TimeStr, atom_to_list(node()), Str]),
 
     lists:flatten(lists:map(fun(X) -> 
                                     io_lib:format("~.16X", [X, ""]) 

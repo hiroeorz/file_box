@@ -7,8 +7,8 @@
 -module(file_box_server).
 -behavior(gen_server).
 -include_lib("eunit/include/eunit.hrl").
--record(state, {id,       %% int()
-                base_dir  %% string()
+-record(state, {id        ::integer(),
+                base_dir  ::string()
                }).
 
 -export([init/1]).
@@ -144,7 +144,8 @@ handle_cast(_Msg, State) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_info(_Info, State) ->
+handle_info(Info, State) ->
+    io:format("error in file_box_server. Info: ~p", [Info]),
     {noreply, State}.
   
 terminate(_Reason, _State) -> ok.

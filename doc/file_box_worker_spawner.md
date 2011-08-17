@@ -1,16 +1,23 @@
-Module file_box
-===============
+Module file_box_worker_spawner
+==============================
 
 
-<h1>Module file_box</h1>
+<h1>Module file_box_worker_spawner</h1>
 
+* [Description](#description)
 * [Function Index](#index)
 * [Function Details](#functions)
 
 
+.
 
 
 
+Copyright (c) (C) 2011, Hiroe Shin
+
+__Behaviours:__ [`gen_server`](gen_server.md).
+
+__Authors:__ Hiroe Shin ([`hiroe.orz@gmail.com`](mailto:hiroe.orz@gmail.com)).
 
 <h2><a name="index">Function Index</a></h2>
 
@@ -18,9 +25,8 @@ Module file_box
 
 <table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#read_file-1">read_file/1</a></td><td>
 Read data.</td></tr><tr><td valign="top"><a href="#save_file-2">save_file/2</a></td><td>
-Save data.</td></tr><tr><td valign="top"><a href="#start-0">start/0</a></td><td>
-Boot file_box system.</td></tr><tr><td valign="top"><a href="#stop-0">stop/0</a></td><td>
-Shut down file_box system.</td></tr></table>
+Save data.</td></tr><tr><td valign="top"><a href="#start_link-0">start_link/0</a></td><td>
+Starts the server.</td></tr></table>
 
 
 
@@ -60,35 +66,19 @@ Read data.
 
 
 Save data.
-<a name="start-0"></a>
+<a name="start_link-0"></a>
 
-<h3>start/0</h3>
-
-
+<h3>start_link/0</h3>
 
 
 
-<pre>start() -> ok</pre>
+
+
+<pre>start_link() -> {ok, Pid} | ignore | {error, Error}</pre>
 <br></br>
 
 
 
 
 
-Boot file_box system.
-<a name="stop-0"></a>
-
-<h3>stop/0</h3>
-
-
-
-
-
-<pre>stop() -> ok</pre>
-<br></br>
-
-
-
-
-
-Shut down file_box system.
+Starts the server

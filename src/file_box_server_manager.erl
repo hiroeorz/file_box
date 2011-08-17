@@ -11,7 +11,7 @@
 -behaviour(gen_server).
 
 %% HEADERS
--include_lib("file_box/include/fb_server.hrl").
+-include("../include/fb_server.hrl").
 
 %% API
 -export([start_link/0]).

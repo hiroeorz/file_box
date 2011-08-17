@@ -22,7 +22,7 @@ __Authors:__ HIROE Shin ([`twitter: http://twitter.com/#!/hiroe_orz17`](mailto:t
 
 
 
-<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#code_change-3">code_change/3</a></td><td></td></tr><tr><td valign="top"><a href="#get_file_key-1">get_file_key/1</a></td><td>save file key and server_id.</td></tr><tr><td valign="top"><a href="#get_server_id-1">get_server_id/1</a></td><td>get server_id from file key.</td></tr><tr><td valign="top"><a href="#handle_call-3">handle_call/3</a></td><td>handle call for save_file.</td></tr><tr><td valign="top"><a href="#init-1">init/1</a></td><td>initialize server.</td></tr><tr><td valign="top"><a href="#set_server_list-2">set_server_list/2</a></td><td>get server_id from file key.</td></tr><tr><td valign="top"><a href="#start-0">start/0</a></td><td>starting server.</td></tr><tr><td valign="top"><a href="#start_link-0">start_link/0</a></td><td>starting server.</td></tr><tr><td valign="top"><a href="#terminate-2">terminate/2</a></td><td></td></tr></table>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#code_change-3">code_change/3</a></td><td></td></tr><tr><td valign="top"><a href="#get_file_key-1">get_file_key/1</a></td><td>save file key and server_id.</td></tr><tr><td valign="top"><a href="#get_server_id_list-1">get_server_id_list/1</a></td><td>get server_id from file key.</td></tr><tr><td valign="top"><a href="#init-1">init/1</a></td><td>initialize server.</td></tr><tr><td valign="top"><a href="#set_server_list-2">set_server_list/2</a></td><td>get server_id from file key.</td></tr><tr><td valign="top"><a href="#start-0">start/0</a></td><td>starting server.</td></tr><tr><td valign="top"><a href="#start_link-0">start_link/0</a></td><td>starting server.</td></tr><tr><td valign="top"><a href="#terminate-2">terminate/2</a></td><td></td></tr></table>
 
 
 
@@ -55,36 +55,21 @@ __Authors:__ HIROE Shin ([`twitter: http://twitter.com/#!/hiroe_orz17`](mailto:t
 
 
 save file key and server_id.
-<a name="get_server_id-1"></a>
+<a name="get_server_id_list-1"></a>
 
-<h3>get_server_id/1</h3>
-
-
+<h3>get_server_id_list/1</h3>
 
 
 
-<pre>get_server_id(FileKey::string()) -> {ok, integer()} | {error, not_found}</pre>
+
+
+<pre>get_server_id_list(FileKey::string()) -> {ok, [integer()]} | {error, not_found}</pre>
 <br></br>
 
 
 
 
 get server_id from file key.
-<a name="handle_call-3"></a>
-
-<h3>handle_call/3</h3>
-
-
-
-
-
-<pre>handle_call(X1::tuple(), From::pid(), State::#state{}) -> {reply, any(), #state{}}</pre>
-<br></br>
-
-
-
-
-handle call for save_file
 <a name="init-1"></a>
 
 <h3>init/1</h3>

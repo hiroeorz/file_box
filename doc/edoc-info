@@ -1,4 +1,5 @@
 {application,file_box}.
 {packages,[]}.
 {modules,[file_box,file_box_app,file_box_config,file_box_db,file_box_server,
-          file_box_server_sup,file_box_sup]}.
+          file_box_server_manager,file_box_server_sup,file_box_sup,
+          file_box_worker,file_box_worker_spawner]}.
