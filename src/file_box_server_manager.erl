@@ -11,6 +11,7 @@
 -behaviour(gen_server).
 
 %% HEADERS
+-include_lib("eunit/include/eunit.hrl").
 -include("../include/fb_server.hrl").
 
 %% API
@@ -165,8 +166,9 @@ handle_call({set_server_status, Id, Node, Pid, TotalSize}, _From, State) ->
 
 handle_call({get_save_target_list}, _From, State) ->
     List = get_servers(),
+    AliveList = delete_disabled_savers(List),
     MirrorCount = file_box_config:get(mirror_count),
-    NewList = lists:sublist(List, MirrorCount * 2), %% FOR FAIL SERVER. 
+    NewList = lists:sublist(AliveList, MirrorCount * 2), %% FOR FAIL SERVER. 
 
     {reply, NewList, State};
 
@@ -271,6 +273,33 @@ restore_table()->
 		     continue
 	     end,
     dets:traverse(fbServerManagerDisk, Insert).
+
+%%--------------------------------------------------------------------
+%% @private
+%% @doc
+%% Return only alive server.
+%%
+%% @end
+%%--------------------------------------------------------------------
+-spec(delete_disabled_savers(ServerList::list(#fb_server{})) -> 
+             list(#fb_server{})).
+
+delete_disabled_savers(ServerList) ->
+    delete_disabled_savers(ServerList, [node() | nodes()], []).
+
+delete_disabled_savers([], _AliveList, ResultList) ->
+    ?debugVal(ResultList),
+    lists:reverse(ResultList);
+
+delete_disabled_savers(ServerList, AliveList, ResultList) ->
+    [Server | Tail] = ServerList,
+
+    case lists:any(fun(Node)-> Node == Server#fb_server.node end, AliveList) of
+        true ->
+            delete_disabled_savers(Tail, AliveList, [Server | ResultList]);
+        false ->
+            delete_disabled_savers(Tail, AliveList, ResultList)
+    end.
 
 %%--------------------------------------------------------------------
 %% @private
